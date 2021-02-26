@@ -11,7 +11,7 @@
 #define CLOCK 12
 #define ANALOG_PINS 7
 #define NUMBER_OF_NOTES 4
-#define NOTE_START_PIN 13
+#define NOTE_START_PIN 2
 
 static const uint8_t analog_pins[] = {A1, A2, A3, A4, A5, A6, A7};
 
@@ -26,7 +26,7 @@ int get_choice(int max_val) {
 	return random(0, max_val);
 };
 
-int select_pin() {
+int get_new_note() {
 	NoteProb probabilities[NUMBER_OF_NOTES];
 	int x;
 	int choice;
@@ -42,13 +42,29 @@ int select_pin() {
 
 	for(x = 0; x < NUMBER_OF_NOTES; x++) {
 		if (choice >= probabilities[x].start_val && choice < probabilities[x].end_val) {
+			Serial.println("start_val: ");
+			Serial.println(probabilities[x].start_val); 
+			Serial.println("end_val: ");
+			Serial.println(probabilities[x].end_val);
 			return x;
 		}
 	}
 	return -1;
 }
 
+void clear_notes() {
+	for(int x = 0; x < NUMBER_OF_NOTES; x ++) {
+		digitalWrite(NOTE_START_PIN + x, LOW);
+	}
+
+}
+
+void set_note(int note) {
+	digitalWrite(NOTE_START_PIN + note, HIGH);
+}
+
 void setup() {
+	Serial.begin(9600);
 	pinMode(ENTROPY, INPUT);
 	pinMode(CLOCK, INPUT);
 	int x;
@@ -63,5 +79,11 @@ void setup() {
 }
 
 void loop() {
-
+	int newNote = get_new_note();
+	Serial.println(newNote);
+	clear_notes();
+	if (newNote != -1) {
+		set_note(newNote);
+	}
+	delay(1000);
 }
