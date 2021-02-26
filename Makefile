@@ -6,5 +6,5 @@ SERIAL_PORT=/dev/ttyUSB0
 build:
 	${CC} compile --fqbn ${BOARD} ${TARGET}
 
-upload:
+upload: build
 	${CC} upload -p ${SERIAL_PORT} --fqbn ${BOARD} ${TARGET}

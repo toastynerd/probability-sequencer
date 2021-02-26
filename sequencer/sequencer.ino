@@ -31,21 +31,28 @@ int get_new_note() {
 	int x;
 	int choice;
 	int current_total = 0;
+	int read_val;
 
 	for(x = 0; x < NUMBER_OF_NOTES; x++) {
 		probabilities[x].start_val = current_total;
-		current_total += analogRead(analog_pins[x]);
+		read_val = analogRead(analog_pins[x]);
+		if (read_val < 5) {
+			read_val = 0; //discarding super small values because the real world is weird
+		}
+		current_total += read_val;
 		probabilities[x].end_val = current_total;
 	}
 
 	choice = get_choice(current_total);
 
 	for(x = 0; x < NUMBER_OF_NOTES; x++) {
-		if (choice >= probabilities[x].start_val && choice < probabilities[x].end_val) {
+		if (choice > probabilities[x].start_val && choice < probabilities[x].end_val) {
 			Serial.println("start_val: ");
 			Serial.println(probabilities[x].start_val); 
 			Serial.println("end_val: ");
 			Serial.println(probabilities[x].end_val);
+			Serial.println("choice: ");
+			Serial.println(choice);
 			return x;
 		}
 	}
